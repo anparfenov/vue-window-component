@@ -1,0 +1,35 @@
+// Vitest Snapshot v1
+
+exports[`VWindow > VWindow matches snapshot 1`] = `
+"<div class=\\"window window--active\\" data-v-0936ab77=\\"\\" style=\\"top: 50px; left: 30px;\\">
+  <div class=\\"window__top window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__left window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__right window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__top-right window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__top-left window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom-right window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom-left window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__titlebar\\" data-v-0936ab77=\\"\\">
+    <h2 class=\\"window__title\\" data-v-0936ab77=\\"\\">My Window</h2><span class=\\"window__controls\\" data-v-0936ab77=\\"\\"><button class=\\"window__button window__button--maximize\\" aria-label=\\"maximize\\" data-v-0936ab77=\\"\\"></button><button class=\\"window__button window__button--close\\" aria-label=\\"close\\" data-v-0936ab77=\\"\\"></button></span>
+  </div>
+  <div class=\\"window__content\\" data-v-0936ab77=\\"\\"></div>
+</div>"
+`;
+
+exports[`VWindow > renders with proper start position 1`] = `
+"<div class=\\"window window--active\\" data-v-0936ab77=\\"\\" style=\\"top: 50px; left: 30px;\\">
+  <div class=\\"window__top window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__left window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__right window__border\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__top-right window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__top-left window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom-right window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__bottom-left window__border window__border--small\\" data-v-0936ab77=\\"\\"></div>
+  <div class=\\"window__titlebar\\" data-v-0936ab77=\\"\\">
+    <h2 class=\\"window__title\\" data-v-0936ab77=\\"\\">My Window</h2><span class=\\"window__controls\\" data-v-0936ab77=\\"\\"><button class=\\"window__button window__button--maximize\\" aria-label=\\"maximize\\" data-v-0936ab77=\\"\\"></button><button class=\\"window__button window__button--close\\" aria-label=\\"close\\" data-v-0936ab77=\\"\\"></button></span>
+  </div>
+  <div class=\\"window__content\\" data-v-0936ab77=\\"\\"></div>
+</div>"
+`;
