@@ -1,1 +1,1 @@
-export { default as VWindow } from './components/Window/VWindow.vue';
+export { default as VWindow } from "./components/Window/VWindow.vue";

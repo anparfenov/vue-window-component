@@ -58,8 +58,10 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, watchEffect, defineComponent } from "vue";
+import { ref, onMounted, watchEffect, defineComponent, toRefs } from "vue";
 import { useResizer, useMover, Position } from "../../use/useWindow";
+
+import type { Ref } from "vue";
 
 export default defineComponent({
 	name: "VWindow",
@@ -69,28 +71,28 @@ export default defineComponent({
 	},
 	emits: ["close"],
 	setup(props, { emit }) {
+		const { initPos } = toRefs(props);
 		// init y pos of frame
-		let startPosTop = props.initPos.y;
+		let startPosTop = initPos.value.y;
 		// init x pos of frame
-		let startPosLeft = props.initPos.x;
+		let startPosLeft = initPos.value.x;
 
 		// template refs
-		const frame = ref(null);
-		const titlebar = ref(null);
+		const frame: Ref<HTMLDivElement | null> = ref(null);
+		const titlebar: Ref<HTMLDivElement | null> = ref(null);
 
 		// TODO: move to Css object
 		const frameActiveClass = "window--active";
 		const windowMaxClass = "window--max";
 
-		let handleTopMouseDown = ref(null);
-		let handleBottomMouseDown = ref(null);
-		let handleLeftMouseDown = ref(null);
-		let handleRightMouseDown = ref(null);
-		let handleTopRightMouseDown = ref(null);
-		let handleBottomRightMouseDown = ref(null);
-		let handleTopLeftMouseDown = ref(null);
-		let handleBottomLeftMouseDown = ref(null);
-
+		let handleTopMouseDown = ref();
+		let handleBottomMouseDown = ref();
+		let handleLeftMouseDown = ref();
+		let handleRightMouseDown = ref();
+		let handleTopRightMouseDown = ref();
+		let handleBottomRightMouseDown = ref();
+		let handleTopLeftMouseDown = ref();
+		let handleBottomLeftMouseDown = ref();
 
 		const { handleResizeMouseDown } = useResizer(frame, {
 			top: startPosTop,
@@ -110,46 +112,49 @@ export default defineComponent({
 		let memPosX = 0;
 		let memPosY = 0;
 		function maximizeWindow() {
-			frame.value.classList.toggle(windowMaxClass);
+			if (frame.value) {
+				frame.value.classList.toggle(windowMaxClass);
 
-			if (frame.value.classList.contains(windowMaxClass)) {
-				memWidth = frame.value.style.width;
-				memHeight = frame.value.style.height;
-				const BBox = frame.value.getBoundingClientRect();
-				memPosX = BBox.x;
-				memPosY = BBox.y;
+				if (frame.value.classList.contains(windowMaxClass)) {
+					memWidth = frame.value.style.width;
+					memHeight = frame.value.style.height;
+					const BBox = frame.value.getBoundingClientRect();
+					memPosX = BBox.x;
+					memPosY = BBox.y;
 
-				frame.value.style.width = "auto";
-				frame.value.style.height = "auto";
-				frame.value.style.transform = "none";
-				frame.value.style.top = 0 + "px";
-				frame.value.style.left = 0 + "px";
-				frame.value.style.right = 0 + "px";
-				frame.value.style.bottom = 0 + "px";
+					frame.value.style.width = "auto";
+					frame.value.style.height = "auto";
+					frame.value.style.transform = "none";
+					frame.value.style.top = 0 + "px";
+					frame.value.style.left = 0 + "px";
+					frame.value.style.right = 0 + "px";
+					frame.value.style.bottom = 0 + "px";
 
-
-				startPosLeft = 0;
-				startPosTop = 0;
-			} else {
-				frame.value.style.width = memWidth;
-				frame.value.style.height = memHeight;
-				frame.value.style.top = memPosY + "px";
-				frame.value.style.left = memPosX + "px";
-				startPosTop = memPosY;
-				startPosLeft = memPosX;
+					startPosLeft = 0;
+					startPosTop = 0;
+				} else {
+					frame.value.style.width = memWidth;
+					frame.value.style.height = memHeight;
+					frame.value.style.top = memPosY + "px";
+					frame.value.style.left = memPosX + "px";
+					startPosTop = memPosY;
+					startPosLeft = memPosX;
+				}
 			}
 		}
 
 		onMounted(() => {
-			frame.value.style.top = startPosTop + "px";
-			frame.value.style.left = startPosLeft + "px";
-			// TODO: do i need this?
-			frame.value.classList.add(frameActiveClass);
-			if (startPosTop > window.innerWidth - frame.value.clientWidth) {
-				startPosLeft = 0;
-			}
-			if (startPosLeft > window.innerHeight - frame.value.clientHeight) {
-				startPosTop = 0;
+			if (frame.value) {
+				frame.value.style.top = startPosTop + "px";
+				frame.value.style.left = startPosLeft + "px";
+				// TODO: do i need this?
+				frame.value.classList.add(frameActiveClass);
+				if (startPosTop > window.innerWidth - frame.value.clientWidth) {
+					startPosLeft = 0;
+				}
+				if (startPosLeft > window.innerHeight - frame.value.clientHeight) {
+					startPosTop = 0;
+				}
 			}
 		});
 
@@ -237,6 +242,9 @@ export default defineComponent({
 		"left titlebar right"
 		"left content right"
 		"bottom-left bottom bottom-right";
+}
+.window * {
+	box-sizing: border-box;
 }
 .window--active {
 	display: grid;

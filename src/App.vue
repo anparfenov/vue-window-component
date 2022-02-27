@@ -2,7 +2,7 @@
 import VWindow from "./components/Window/VWindow.vue";
 
 function handleWindowClose() {
-	console.log('close');
+	console.log("close");
 }
 </script>
 
@@ -19,8 +19,6 @@ function handleWindowClose() {
 </template>
 
 <style>
-@import "./assets/base.css";
-
 #app {
 	max-width: 1280px;
 	margin: 0 auto;

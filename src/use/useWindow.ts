@@ -104,12 +104,7 @@ export function useResizer(
 		}
 	}
 
-	function resizeBottom({
-		frame,
-		initHeight = 0,
-		deltaY = 0,
-		startPos = { left: 0, top: 0 },
-	}: ResizeProps) {
+	function resizeBottom({ frame, initHeight = 0, deltaY = 0 }: ResizeProps) {
 		if (frame.value && frameBbox) {
 			frame.value.style.height =
 				clamp(initHeight - deltaY, 0, windowHeight - frameBbox.top) +
@@ -412,7 +407,7 @@ export function useResizer(
 
 export function useMover(
 	frame: Ref<HTMLDivElement | null>,
-	titlebar: Ref<HTMLDivElement>,
+	titlebar: Ref<HTMLDivElement | null>,
 	startPos: StartPos
 ) {
 	const grabbingClass = "window__titlebar--grabbing";
@@ -453,17 +448,17 @@ export function useMover(
 		windowWidth = window.innerWidth;
 		windowHeight = window.innerHeight;
 
-		const BBox = titlebar.value.getBoundingClientRect();
+		const BBox = titlebar.value?.getBoundingClientRect() ?? { x: 0, y: 0 };
 		titleBarX = e.clientX - BBox.x; // x pos inside titlebar
 		titleBarY = e.clientY - BBox.y; // y pos inside titlebar
-		titlebar.value.classList.add(grabbingClass);
+		titlebar.value?.classList.add(grabbingClass);
 
 		window.addEventListener("mousemove", handleTitleBarMouseMove);
 		window.addEventListener("mouseup", handleTitleBarMouseUp);
 	}
 
 	function handleTitleBarMouseUp() {
-		titlebar.value.classList.remove(grabbingClass);
+		titlebar.value?.classList.remove(grabbingClass);
 		window.removeEventListener("mousemove", handleTitleBarMouseMove);
 		window.removeEventListener("mouseup", handleTitleBarMouseUp);
 	}
