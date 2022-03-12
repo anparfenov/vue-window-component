@@ -5,8 +5,9 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite",
-		"build": "npm run typecheck && vite build && vue-tsc -p tsconfig.declaration.json",
-		"preview": "vite preview --port 5050",
+		"build": "npm run typecheck && vite build --config vite.config.ts && vue-tsc -p tsconfig.declaration.json",
+		"build:demo": "npm run typecheck && vite build --config vite-demo.config.ts",
+		"preview": "vite preview --config vite-demo.config.ts --port 5050",
 		"test:unit": "vitest --environment jsdom",
 		"typecheck": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
 		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
