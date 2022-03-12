@@ -61,21 +61,20 @@
 import { ref, onMounted, watchEffect, defineComponent, toRefs } from "vue";
 import { useResizer, useMover, Position } from "../../use/useWindow";
 
+import type { PropType } from "vue";
+import type { Coordinates } from '../../use/useWindow';
+
 import type { Ref } from "vue";
 
 export default defineComponent({
 	name: "VWindow",
 	props: {
-		initPos: { type: Object, default: () => ({ x: 0, y: 0 }) },
+		initPos: { type: Object as PropType<Coordinates>, default: () => ({ top: 0, left: 0 }) },
 		title: { type: String, default: "" },
 	},
 	emits: ["close"],
 	setup(props, { emit }) {
 		const { initPos } = toRefs(props);
-		// init y pos of frame
-		let startPosTop = initPos.value.y;
-		// init x pos of frame
-		let startPosLeft = initPos.value.x;
 
 		// template refs
 		const frame: Ref<HTMLDivElement | null> = ref(null);
@@ -94,14 +93,8 @@ export default defineComponent({
 		let handleTopLeftMouseDown = ref();
 		let handleBottomLeftMouseDown = ref();
 
-		const { handleResizeMouseDown } = useResizer(frame, {
-			top: startPosTop,
-			left: startPosLeft,
-		});
-		const { handleTitleBarMouseDown } = useMover(frame, titlebar, {
-			top: startPosTop,
-			left: startPosLeft,
-		});
+		const { handleResizeMouseDown } = useResizer(frame, initPos);
+		const { handleTitleBarMouseDown } = useMover(frame, titlebar, initPos);
 
 		function closeWindow() {
 			emit("close");
@@ -109,8 +102,7 @@ export default defineComponent({
 
 		let memWidth = "auto";
 		let memHeight = "auto";
-		let memPosX = 0;
-		let memPosY = 0;
+		let memTransform = '';
 		function maximizeWindow() {
 			if (frame.value) {
 				frame.value.classList.toggle(windowMaxClass);
@@ -118,9 +110,7 @@ export default defineComponent({
 				if (frame.value.classList.contains(windowMaxClass)) {
 					memWidth = frame.value.style.width;
 					memHeight = frame.value.style.height;
-					const BBox = frame.value.getBoundingClientRect();
-					memPosX = BBox.x;
-					memPosY = BBox.y;
+					memTransform = frame.value.style.transform;
 
 					frame.value.style.width = "auto";
 					frame.value.style.height = "auto";
@@ -129,31 +119,25 @@ export default defineComponent({
 					frame.value.style.left = 0 + "px";
 					frame.value.style.right = 0 + "px";
 					frame.value.style.bottom = 0 + "px";
-
-					startPosLeft = 0;
-					startPosTop = 0;
 				} else {
 					frame.value.style.width = memWidth;
 					frame.value.style.height = memHeight;
-					frame.value.style.top = memPosY + "px";
-					frame.value.style.left = memPosX + "px";
-					startPosTop = memPosY;
-					startPosLeft = memPosX;
+					frame.value.style.transform = memTransform;
 				}
 			}
 		}
 
 		onMounted(() => {
 			if (frame.value) {
-				frame.value.style.top = startPosTop + "px";
-				frame.value.style.left = startPosLeft + "px";
+				frame.value.style.top = initPos.value.top + "px";
+				frame.value.style.left = initPos.value.left + "px";
 				// TODO: do i need this?
 				frame.value.classList.add(frameActiveClass);
-				if (startPosTop > window.innerWidth - frame.value.clientWidth) {
-					startPosLeft = 0;
+				if (initPos.value.top > window.innerWidth - frame.value.clientWidth) {
+					initPos.value.left = 0;
 				}
-				if (startPosLeft > window.innerHeight - frame.value.clientHeight) {
-					startPosTop = 0;
+				if (initPos.value.top > window.innerHeight - frame.value.clientHeight) {
+					initPos.value.left = 0;
 				}
 			}
 		});
@@ -300,9 +284,12 @@ export default defineComponent({
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	width: 100%;
+	max-width: 100%;
 	justify-self: flex-start;
 	text-align: left;
+	margin: 0;
+	user-select: text;
+	--webkit-user-select: text;
 }
 
 .window__titlebar {
@@ -317,6 +304,8 @@ export default defineComponent({
 	display: grid;
 	grid-template-columns: minmax(30px, auto) auto;
 	column-gap: 0.25rem;
+	user-select: none;
+	--webkit-user-select: none;
 }
 .window__titlebar--grabbing {
 	cursor: grabbing;

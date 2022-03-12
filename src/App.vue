@@ -10,7 +10,6 @@ function handleWindowClose() {
 	<div class="wrapper">
 		<VWindow
 			title="asdfasdasdfasdfasdfasdfasdasdfasdfff"
-			:initPos="{ x: 20, y: 30 }"
 			@close="handleWindowClose"
 		>
 			hello

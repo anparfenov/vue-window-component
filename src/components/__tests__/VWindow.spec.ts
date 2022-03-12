@@ -11,7 +11,7 @@ describe("VWindow", () => {
 
 	it("VWindow matches snapshot", () => {
 		const wrapper = mount(VWindow, {
-			props: { title: "My Window", initPos: { x: 30, y: 50 } },
+			props: { title: "My Window", initPos: { left: 30, top: 50 } },
 		});
 		expect(wrapper.html()).toMatchSnapshot();
 	});

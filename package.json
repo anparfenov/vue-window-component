@@ -16,10 +16,15 @@
 	],
 	"main": "./dist/v-window.umd.js",
 	"module": "./dist/v-window.es.js",
+	"types": "./dist/types/component.d.ts",
 	"exports": {
 		".": {
 			"import": "./dist/v-window.es.js",
 			"require": "./dist/v-window.umd.js"
+		},
+		"./dist/style.css": {
+			"import": "./dist/style.css",
+			"require": "./dist/style.css"
 		}
 	},
 	"keywords": ["vue", "component"],

@@ -1,4 +1,5 @@
-import { onMounted, type Ref, onBeforeUnmount } from "vue";
+import { onMounted, onBeforeUnmount, ref } from "vue";
+import type { Ref } from "vue";
 import { getTranslateXY, noop, clamp } from "../utils";
 
 export enum Position {
@@ -14,7 +15,7 @@ export enum Position {
 type MoveProps = {
 	pos: Position;
 	elem: HTMLElement;
-	startPos: StartPos;
+	initPos: Ref<Coordinates>;
 	event: MouseEvent;
 };
 
@@ -26,19 +27,19 @@ type ResizeProps = {
 	deltaY?: number;
 	position?: Position;
 	event?: MouseEvent;
-	startPos?: StartPos;
+	initPos?: Ref<Coordinates>;
 };
 
 type MouseEventListener = (e: MouseEvent) => void;
 
-type StartPos = {
+export type Coordinates = {
 	left: number;
 	top: number;
 };
 
 export function useResizer(
 	frame: Ref<HTMLDivElement | null>,
-	startPos: StartPos
+	initPos: Ref<Coordinates>
 ) {
 	let handleResizeMouseUpTop: MouseEventListener = noop;
 	let handleResizeMouseUpBottom: MouseEventListener = noop;
@@ -66,18 +67,18 @@ export function useResizer(
 	let windowWidth = window.innerWidth;
 	let windowHeight = window.innerHeight;
 
-	function move({ pos, elem, event, startPos }: MoveProps) {
+	function move({ pos, elem, event, initPos }: MoveProps) {
 		if (frame.value) {
 			if (pos === Position.Top) {
 				const { translateX } = getTranslateXY(elem);
 				frame.value.style.transform = `translate(
-					${clamp(translateX, 0 - startPos.left, windowWidth)}px,
-					${clamp(event.pageY - startPos.top, 0 - startPos.top, windowHeight)}px)`;
+					${clamp(translateX, 0 - initPos.value.left, windowWidth)}px,
+					${clamp(event.pageY - initPos.value.top, 0 - initPos.value.top, windowHeight)}px)`;
 			} else if (pos === Position.Left) {
 				const { translateY } = getTranslateXY(elem);
 				frame.value.style.transform = `translate(
-					${clamp(event.pageX - startPos.left, 0 - startPos.left, windowWidth)}px,
-					${clamp(translateY, 0 - startPos.top, windowHeight)}px)`;
+					${clamp(event.pageX - initPos.value.left, 0 - initPos.value.left, windowWidth)}px,
+					${clamp(translateY, 0 - initPos.value.top, windowHeight)}px)`;
 			}
 		}
 	}
@@ -88,7 +89,7 @@ export function useResizer(
 		deltaY = 0,
 		position = Position.Top,
 		event,
-		startPos = { left: 0, top: 0 },
+		initPos = ref({ left: 0, top: 0 }),
 	}: ResizeProps) {
 		if (frame.value && event && frameBbox) {
 			frame.value.style.height =
@@ -99,7 +100,7 @@ export function useResizer(
 				pos: position,
 				elem: frame.value,
 				event,
-				startPos,
+				initPos,
 			});
 		}
 	}
@@ -118,7 +119,7 @@ export function useResizer(
 		deltaX = 0,
 		position = Position.Left,
 		event,
-		startPos = { left: 0, top: 0 },
+		initPos = ref({ left: 0, top: 0 }),
 	}: ResizeProps) {
 		if (frame.value && event && frameBbox) {
 			frame.value.style.width =
@@ -128,7 +129,7 @@ export function useResizer(
 				pos: position,
 				elem: frame.value,
 				event,
-				startPos,
+				initPos,
 			});
 		}
 	}
@@ -153,7 +154,7 @@ export function useResizer(
 						initHeight,
 						deltaY,
 						event: e,
-						startPos,
+						initPos,
 					});
 					break;
 				case Position.Bottom:
@@ -165,7 +166,7 @@ export function useResizer(
 						initWidth,
 						deltaX,
 						event: e,
-						startPos,
+						initPos,
 					});
 					break;
 				case Position.Right:
@@ -177,7 +178,7 @@ export function useResizer(
 						initHeight,
 						deltaY,
 						event: e,
-						startPos,
+						initPos,
 					});
 					resizeRight({ frame, initWidth, deltaX });
 					break;
@@ -187,14 +188,14 @@ export function useResizer(
 						initHeight,
 						deltaY,
 						event: e,
-						startPos,
+						initPos,
 					});
 					resizeLeft({
 						frame,
 						initWidth,
 						deltaX,
 						event: e,
-						startPos,
+						initPos,
 					});
 					break;
 				case Position.BottomRight:
@@ -208,7 +209,7 @@ export function useResizer(
 						initWidth,
 						deltaX,
 						event: e,
-						startPos,
+						initPos,
 					});
 					break;
 				default:
@@ -408,7 +409,7 @@ export function useResizer(
 export function useMover(
 	frame: Ref<HTMLDivElement | null>,
 	titlebar: Ref<HTMLDivElement | null>,
-	startPos: StartPos
+	initPos: Ref<Coordinates>
 ) {
 	const grabbingClass = "window__titlebar--grabbing";
 	const frameActiveClass = "window--active";
@@ -418,20 +419,21 @@ export function useMover(
 	let windowHeight = window.innerHeight;
 	let frameBbox = frame.value?.getBoundingClientRect() ?? null;
 
+
 	function handleTitleBarMouseMove(e: MouseEvent) {
 		if (frame.value && frameBbox) {
 			const x = e.pageX;
 			const y = e.pageY;
 			frame.value.style.transform = `translate(
 				${clamp(
-					x - titleBarX - startPos.left,
-					0 - startPos.left,
-					windowWidth - frameBbox.width - startPos.left
+					x - titleBarX - initPos.value.left,
+					0 - initPos.value.left,
+					windowWidth - frameBbox.width - initPos.value.left
 				)}px,
 				${clamp(
-					y - titleBarY - startPos.top,
-					0 - startPos.top,
-					windowHeight - frameBbox.height - startPos.top
+					y - titleBarY - initPos.value.top,
+					0 - initPos.value.top,
+					windowHeight - frameBbox.height - initPos.value.top
 				)}px)`;
 		}
 	}
