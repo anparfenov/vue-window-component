@@ -2,6 +2,8 @@
 
 Vue 3 window component
 
+[demo](https://moody-person.github.io/vue-window-component/)
+
 ![screenshot](docs/assets/vue-window-screenshot.png)
 
 ## Installation
